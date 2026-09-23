@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Todo List</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Todo List</h1>
+
+        <a href="/todos/create" class="button">
+            Add Todo
+        </a>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Completed</th>
+            <th>Actions</th>
+        </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        <tr th:each="todo : ${todos}">
+
+            <td th:text="${todo.id}"></td>
+
+            <td th:text="${todo.title}"></td>
+
+            <td th:text="${todo.description}"></td>
+
+            <td>
+                <span
+                    th:text="${todo.completed ? 'Yes' : 'No'}">
+                </span>
+            </td>
+
+            <td class="actions">
+
+                <a
+                    th:href="@{/todos/{id}/edit(id=${todo.id})}"
+                    class="edit-link">
+
+                    Edit
+
+                </a>
+
+                <form
+                    th:action="@{/todos/{id}/delete(id=${todo.id})}"
+                    method="post">
+
+                    <button
+                        type="submit"
+                        class="delete-button">
+
+                        Delete
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+
+</html>
