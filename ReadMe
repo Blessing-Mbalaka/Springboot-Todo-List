@@ -1,0 +1,564 @@
+
+# Spring Boot Todo App
+
+A simple CRUD Todo List web application built with Spring Boot using the MVC architecture.
+
+This project was created as a learning exercise to understand how Spring Boot MVC compares with ASP.NET MVC, including models, controllers, views, repositories, services, database access, and migrations.
+
+![Todo App Screenshot](docs/image.png)
+
+---
+
+## Features
+
+* Create a new todo
+* View all todos
+* Edit an existing todo
+* Delete a todo
+* Mark a todo as completed
+* Persistent local database
+* Database migrations with Flyway
+* Simple responsive styling with CSS
+
+---
+
+## Tech Stack
+
+* Java 21
+* Spring Boot 4.1.1
+* Spring MVC
+* Spring Data JPA
+* Hibernate
+* Thymeleaf
+* H2 Database
+* Flyway
+* Maven
+* HTML
+* CSS
+* VS Code
+
+---
+
+## Project Architecture
+
+The application follows a layered MVC architecture:
+
+```text
+Browser
+   |
+   v
+Controller
+   |
+   v
+Service
+   |
+   v
+Repository
+   |
+   v
+JPA / Hibernate
+   |
+   v
+H2 Database
+```
+
+The project structure is:
+
+```text
+todoapp/
+|
+├── docs/
+│   └── image.png
+|
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           └── todoapp/
+│   │   │               ├── controller/
+│   │   │               │   └── TodoController.java
+│   │   │               │
+│   │   │               ├── model/
+│   │   │               │   └── Todo.java
+│   │   │               │
+│   │   │               ├── repository/
+│   │   │               │   └── TodoRepository.java
+│   │   │               │
+│   │   │               ├── service/
+│   │   │               │   └── TodoService.java
+│   │   │               │
+│   │   │               └── TodoappApplication.java
+│   │   │
+│   │   └── resources/
+│   │       ├── db/
+│   │       │   └── migration/
+│   │       │       └── V1__create_todo_table.sql
+│   │       │
+│   │       ├── static/
+│   │       │   └── css/
+│   │       │       └── style.css
+│   │       │
+│   │       ├── templates/
+│   │       │   ├── index.html
+│   │       │   ├── create.html
+│   │       │   └── edit.html
+│   │       │
+│   │       └── application.properties
+│   │
+│   └── test/
+|
+├── pom.xml
+├── mvnw
+├── mvnw.cmd
+└── README.md
+```
+
+---
+
+## MVC Comparison with ASP.NET
+
+The project uses concepts that closely resemble ASP.NET MVC.
+
+| ASP.NET MVC           | Spring Boot MVC             |
+| --------------------- | --------------------------- |
+| Model                 | `@Entity`                   |
+| Controller            | `@Controller`               |
+| Razor Views           | Thymeleaf                   |
+| Entity Framework Core | JPA / Hibernate             |
+| `DbSet<T>`            | `JpaRepository<T, ID>`      |
+| Dependency Injection  | Spring Dependency Injection |
+| `.csproj`             | `pom.xml`                   |
+| `appsettings.json`    | `application.properties`    |
+| EF Migrations         | Flyway                      |
+| SQL Server / SQLite   | H2                          |
+
+---
+
+## Todo Model
+
+The main domain model is the `Todo` entity.
+
+```java
+@Entity
+public class Todo {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String description;
+
+    private boolean completed;
+}
+```
+
+This entity is mapped to the `todo` table in the database.
+
+---
+
+## Repository
+
+Spring Data JPA handles the main CRUD database operations.
+
+```java
+public interface TodoRepository
+        extends JpaRepository<Todo, Long> {
+}
+```
+
+By extending `JpaRepository`, Spring automatically provides methods such as:
+
+```text
+findAll()
+findById()
+save()
+deleteById()
+```
+
+---
+
+## Service Layer
+
+The service layer sits between the controller and repository.
+
+```text
+Controller
+    |
+    v
+TodoService
+    |
+    v
+TodoRepository
+```
+
+The service contains the application's business logic and database operations.
+
+---
+
+## Controller
+
+The controller handles HTTP requests and routes them to the appropriate application logic.
+
+Example routes include:
+
+```text
+GET     /
+GET     /todos/create
+POST    /todos
+GET     /todos/{id}/edit
+POST    /todos/{id}
+POST    /todos/{id}/delete
+```
+
+---
+
+## Views
+
+Thymeleaf is used to generate the HTML views.
+
+The main templates are:
+
+```text
+index.html
+create.html
+edit.html
+```
+
+For example:
+
+```html
+<tr th:each="todo : ${todos}">
+    <td th:text="${todo.id}"></td>
+    <td th:text="${todo.title}"></td>
+    <td th:text="${todo.description}"></td>
+</tr>
+```
+
+This is conceptually similar to using Razor:
+
+```csharp
+@foreach (var todo in Model)
+{
+    ...
+}
+```
+
+---
+
+## Database
+
+The project uses H2 as a lightweight local SQL database.
+
+The connection configuration is stored in:
+
+```text
+src/main/resources/application.properties
+```
+
+Example:
+
+```properties
+spring.datasource.url=jdbc:h2:file:./data/tododb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+```
+
+The database is stored locally inside:
+
+```text
+data/
+```
+
+---
+
+## H2 Console
+
+The H2 browser console is enabled.
+
+After running the application, open:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Use:
+
+```text
+JDBC URL: jdbc:h2:file:./data/tododb
+Username: sa
+Password:
+```
+
+Leave the password blank.
+
+---
+
+## Database Migrations
+
+Flyway is used to manage schema migrations.
+
+Migration files are stored in:
+
+```text
+src/main/resources/db/migration/
+```
+
+The first migration is:
+
+```text
+V1__create_todo_table.sql
+```
+
+Example:
+
+```sql
+CREATE TABLE todo (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(1000),
+    completed BOOLEAN NOT NULL DEFAULT FALSE
+);
+```
+
+Flyway records completed migrations in its own database table:
+
+```text
+flyway_schema_history
+```
+
+Future schema changes should be added as new migrations.
+
+For example:
+
+```text
+V2__add_due_date.sql
+V3__add_priority.sql
+```
+
+A migration that adds a due date could look like:
+
+```sql
+ALTER TABLE todo
+ADD COLUMN due_date DATE;
+```
+
+---
+
+## Application Configuration
+
+The main application configuration is stored in:
+
+```text
+src/main/resources/application.properties
+```
+
+Example configuration:
+
+```properties
+spring.application.name=todoapp
+
+spring.datasource.url=jdbc:h2:file:./data/tododb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+```
+
+---
+
+## Running the Application
+
+### Prerequisites
+
+Make sure the following are installed:
+
+```text
+Java 21+
+Maven
+```
+
+Check Java:
+
+```powershell
+java -version
+```
+
+Check Maven:
+
+```powershell
+mvn -version
+```
+
+---
+
+## Run Using Maven
+
+From the project folder:
+
+```powershell
+mvn spring-boot:run
+```
+
+Alternatively, use the Maven Wrapper:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+---
+
+## Open the Application
+
+Once the application starts, open:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Build the Project
+
+Run:
+
+```powershell
+mvn clean package
+```
+
+The generated application JAR will appear inside:
+
+```text
+target/
+```
+
+You can then run it with:
+
+```powershell
+java -jar target/todoapp-0.0.1-SNAPSHOT.jar
+```
+
+---
+
+## CRUD Operations
+
+The application demonstrates the four standard CRUD operations.
+
+### Create
+
+Create a new todo item.
+
+```text
+POST /todos
+```
+
+### Read
+
+Display all todo items.
+
+```text
+GET /
+```
+
+### Update
+
+Edit an existing todo.
+
+```text
+GET /todos/{id}/edit
+POST /todos/{id}
+```
+
+### Delete
+
+Delete an existing todo.
+
+```text
+POST /todos/{id}/delete
+```
+
+---
+
+## CSS
+
+Application styling is located at:
+
+```text
+src/main/resources/static/css/style.css
+```
+
+Spring Boot automatically serves static resources from:
+
+```text
+src/main/resources/static/
+```
+
+The stylesheet is referenced from Thymeleaf with:
+
+```html
+<link rel="stylesheet" th:href="@{/css/style.css}">
+```
+
+---
+
+## Learning Objectives
+
+This project demonstrates:
+
+* Spring Boot project structure
+* Java packages
+* MVC architecture
+* Entity modelling
+* Dependency injection
+* Repository pattern
+* Service layer architecture
+* Spring Data JPA
+* Hibernate ORM
+* Thymeleaf templates
+* HTTP routing
+* Form handling
+* CRUD operations
+* H2 database configuration
+* Flyway database migrations
+* Maven dependency management
+* Static resource handling
+
+---
+
+## Possible Future Improvements
+
+Future versions of the project could include:
+
+* Todo due dates
+* Priority levels
+* Todo categories
+* Search and filtering
+* Pagination
+* User authentication
+* Spring Security
+* Form validation
+* REST API endpoints
+* PostgreSQL support
+* SQL Server support
+* Docker support
+* Unit tests
+* Integration tests
+
+---
+
+## Author
+
+**Blessing Mbalaka**
+
+Spring Boot MVC learning project.
