@@ -5,7 +5,7 @@ A simple CRUD Todo List web application built with Spring Boot using the MVC arc
 
 This project was created as a learning exercise to understand how Spring Boot MVC compares with ASP.NET MVC, including models, controllers, views, repositories, services, database access, and migrations.
 
-![Todo App Screenshot](docs/image.png)
+![Todo App Screenshot](https://github.com/Blessing-Mbalaka/Springboot-Todo-List/blob/main/docs/image.png?raw=true)
 
 ---
 
